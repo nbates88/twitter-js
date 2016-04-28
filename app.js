@@ -2,7 +2,12 @@ var express = require('express');
 var http = require('http');
 var swig = require('swig');
 var app = express(); // creates an instance of an express application
-var server = http.createServer();
+
+var routes = require('./routes/');
+var socketio = require('socket.io');
+// ...
+
+app.use('/', routes(io));
 
 
 var locals = {
@@ -13,8 +18,6 @@ var locals = {
         { name: 'Hermione'}
     ]
 };
-
-
 
 swig.renderFile(__dirname + '/views/index.html', locals, function (err, output) {
     console.log(output);
@@ -39,21 +42,8 @@ app.use('/special/*', function(req, res, next){
 	console.log('you have reached the special area');
 });
 
-app.get('/special/', function(req, res){
-	res.send('you have reached the special area');
-});
+var server = app.listen(3000);
+var io = socketio.listen(server);
 
-app.get('/', function (req, res) {
-	var people = [{name: 'Full'}, {name: 'Stacker'}, {name: 'Son'}];
-  	res.render( 'index', {title: 'Hall of Fame', people: people} );
-});
-
-app.get('/news', function (req, res) {
-  res.send('This is the news!');
-});
-
-app.listen(3000, function(){
-	console.log("Server listening on port 3000");
-})
 
 //this is a comment from nichole
